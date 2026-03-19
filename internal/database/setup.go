@@ -4,12 +4,13 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"io/fs"
 	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
-	"github.com/pressly/goose/v3"
+	"github.com/typelate/loosey"
 )
 
 func Setup(ctx context.Context) (*pgxpool.Pool, error) {
@@ -17,7 +18,7 @@ func Setup(ctx context.Context) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
-	if err := RunMigrations(db); err != nil {
+	if err := RunMigrations(ctx, db); err != nil {
 		return nil, err
 	}
 	return db, nil
@@ -42,15 +43,21 @@ func URL() (string, error) {
 //go:embed schema/*.sql
 var migrations embed.FS
 
-func RunMigrations(pool *pgxpool.Pool) error {
-	goose.SetBaseFS(migrations)
-	if err := goose.SetDialect("pgx"); err != nil {
-		return fmt.Errorf("could not set goose dialect: %w", err)
+func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
+	schemaDir, err := fs.Sub(migrations, "schema")
+	if err != nil {
+		return err
 	}
 	db := stdlib.OpenDBFromPool(pool)
-	db.SetMaxIdleConns(0)
-	if err := goose.Up(db, "schema"); err != nil {
-		return fmt.Errorf("could not run migrations: %w", err)
+	defer func() {
+		_ = db.Close()
+	}()
+	m, err := loosey.NewPostgres(ctx, db, schemaDir)
+	if err != nil {
+		return err
+	}
+	if _, err := m.Up(ctx); err != nil {
+		return err
 	}
 	return nil
 }

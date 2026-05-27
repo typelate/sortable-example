@@ -2,7 +2,7 @@ package domain
 
 //go:generate rm -rf internal/fake
 //go:generate mkdir -p internal/fake
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate counterfeiter -generate
 
 //counterfeiter:generate -o internal/fake/read_only_querier.go     --fake-name ReadOnlyQuerier     ../database.ReadOnlyQuerier
 //counterfeiter:generate -o internal/fake/task_priority_updater.go --fake-name TaskPriorityUpdater ../database.TaskPriorityUpdater

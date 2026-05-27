@@ -9,6 +9,13 @@ A drag-and-drop task list built with Go, htmx, and SortableJS. Tasks within a li
 - [sqlc](https://sqlc.dev) — type-safe SQL queries
 - [pgx](https://github.com/jackc/pgx) — PostgreSQL driver
 
+### Installing tools
+
+- `go install github.com/typelate/muxt@latest`
+- `go install github.com/maxbrunsfeld/counterfeiter/v6@latest`
+
+Once they are installed, you can run `go generate ./...`.
+
 ## Running
 
 Set the `DATABASE_URL` environment variable and run:

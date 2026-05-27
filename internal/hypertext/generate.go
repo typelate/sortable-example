@@ -1,6 +1,6 @@
 package hypertext
 
-//go:generate muxt generate --receiver-type-package=github.com/typelate/sortable-example/internal/domain --receiver-type=Service --routes-func Routes
+//go:generate muxt generate --use-receiver-type-package=github.com/typelate/sortable-example/internal/domain --use-receiver-type=Service --output-routes-func=Routes
 //go:generate rm -rf internal/fake
 //go:generate mkdir -p internal/fake
 //go:generate counterfeiter -generate
